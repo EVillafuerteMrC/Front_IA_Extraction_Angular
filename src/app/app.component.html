@@ -3,14 +3,18 @@
     <h1>Suba la imagen</h1>
     <br>
     <br>
-    <input type="file" id="fileInput" #fileInput (onchange)="resetFileInput()">
-    <button type="button" (click)="submitFile()">Enviar</button>
+    <div *ngIf="!Resp_Json">
+      <input type="file" id="fileInput" #fileInput (onchange)="resetFileInput()">
+      <button type="button" (click)="submitFile()">Enviar</button>
+    </div>
     <div *ngIf="Resp_Json">
       <p>La imagen pertenece a {{Resp_Json}}</p>
       <button (click)="extractImage()">Si</button>
-      <button>No</button>
+      <button (click)="Inicio()">No</button>
     </div>
   </div>
+  <br>
+  <br>
 
   <div *ngIf="Resp_Json" style="display: flex;">
     <div *ngIf="(Extract_Json != undefined)||(Extract_Json)" style="flex: 1;">
@@ -46,7 +50,7 @@
         <button (click)="reset()"> Cancelar </button>
       </div>
     </div>
-    <img *ngIf="base64String" [src]="base64String" alt="Base64_image" style="margin-left: 30px;">
+    <img *ngIf="base64String" [src]="base64String" alt="Base64_image">
   </div>
 
 </div>

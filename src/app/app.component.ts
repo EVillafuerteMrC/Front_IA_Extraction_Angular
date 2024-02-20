@@ -1,8 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { HttpClient,HttpHeaders  } from '@angular/common/http';
-import { Data } from '@angular/router';
 import { Mux } from './mux';
-import { ObservableLike } from 'rxjs';
 
 
 @Component({
@@ -56,6 +54,10 @@ export class AppComponent {
     this.image_base64 = ""
     this.Resp_Json = ""
     this.Extract_Json = undefined
+  }
+
+  Inicio(){
+    this.Resp_Json = ""
   }
 
   editablefunction(){
