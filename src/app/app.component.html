@@ -7,16 +7,22 @@
       <input type="file" id="fileInput" #fileInput (onchange)="resetFileInput()">
       <button type="button" (click)="submitFile()">Enviar</button>
     </div>
-    <div *ngIf="Resp_Json">
-      <p>La imagen pertenece a {{Resp_Json}}</p>
-      <button (click)="extractImage()">Si</button>
-      <button (click)="Inicio()">No</button>
+    <div *ngIf="!errores && Resp_Json">
+      <div *ngIf="BadRespExtract == ''">
+        <p>La imagen pertenece a {{Resp_Json}}</p>
+        <button (click)="extractImage()">Si</button>
+        <button (click)="Inicio()">No</button>
+        <button (click)="Inicio()">Cancelar</button>
+      </div>
+    </div>
+    <div *ngIf="errores">
+      <p>Ocurrio un problema, contacte a soporte técnico</p><pre>{{Resp_Json}}</pre>
     </div>
   </div>
   <br>
   <br>
 
-  <div *ngIf="Resp_Json" style="display: flex;">
+  <div *ngIf="Resp_Json && BadRespExtract == ''" style="display: flex;">
     <div *ngIf="(Extract_Json != undefined)||(Extract_Json)" style="flex: 1;">
       <h2>Detalles del Comprobante</h2>
       <p>Banco:</p>
@@ -51,6 +57,10 @@
       </div>
     </div>
     <img *ngIf="base64String" [src]="base64String" alt="Base64_image">
+  </div>
+  <div *ngIf="BadRespExtract !=''">
+    <p>Ocurrio un problema, {{BadRespExtract}}</p>
+    <button (click)="reset()"> Regresar </button>
   </div>
 
 </div>

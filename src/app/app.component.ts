@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
-import { HttpClient,HttpHeaders  } from '@angular/common/http';
 import { Mux } from './mux';
+import { APIService } from './api.service';
 
 
 @Component({
@@ -11,7 +11,7 @@ import { Mux } from './mux';
 export class AppComponent {
   title = 'PruebaModeloIA';
 
-  constructor(private http : HttpClient){}
+  constructor(private service : APIService){}
 
   @ViewChild('fileInput') fileInput:any;
 
@@ -23,11 +23,13 @@ export class AppComponent {
   Extract_Json: Mux | undefined;
   process : boolean = false;
   editable : boolean = true;
-
-  private ApiUrl = 'http://127.0.0.1:8080/upload';
-  private ExUrl = 'http://127.0.0.1:8080/extract';
+  errores : boolean = false;
+  BadRespExtract: string =""
+  
 
   submitFile() {
+    this.BadRespExtract = ""
+    this.errores = false
     const archivo = this.fileInput.nativeElement.files[0];
     if (archivo) {
       this.archivoSeleccionado = archivo;
@@ -38,7 +40,15 @@ export class AppComponent {
         this.base64String = reader.result as string;
         if (this.base64String) {
           this.image_base64 = this.base64String.replace(/^data:image\/jpeg;base64,/, '');
-          this.uploadImage(this.image_base64);
+          this.process = true;
+          this.service.analyzeImage(this.image_base64) .subscribe(prediction => {
+            this.Resp_Json = prediction;
+            this.process = false;
+          }, error => {
+            this.errores = true
+            console.error('Error al analizar la imagen:', error);
+            this.process = false;
+          });
         } else {
           this.image_base64 = 'No fue posible convertir';
         }
@@ -54,71 +64,37 @@ export class AppComponent {
     this.image_base64 = ""
     this.Resp_Json = ""
     this.Extract_Json = undefined
+    this.errores = false 
+    this.BadRespExtract = ''
   }
 
   Inicio(){
     this.Resp_Json = ""
+    this.errores = false
   }
 
   editablefunction(){
     this.editable = false
   }
 
-  
-  uploadImage(b64: string) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
-  
-    const image_base64 = b64;
-    const objJSON = { image_base64: image_base64 };
-  
-    const jsonString = JSON.stringify(objJSON);
-    this.process = true;
-    this.http.post(this.ApiUrl, jsonString, httpOptions).subscribe(
-      (response) => {
-        this.Resp_Json = JSON.stringify(response);
-        this.process = false; // Establecer a false después de recibir la respuesta
-      },
-      (error) => {
-        if (error && error.error && error.error.text) {
-          this.Resp_Json = error.error.text;
-      } else {
-          this.Resp_Json = error;
-      }
-        this.process = false; // Establecer a false en caso de error también
-      });
-  }
-
-
-
   extractImage() {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
-    let Nombre_banco = this.Resp_Json
-
-    this.process = true;
-    this.http.post(this.ExUrl, {Nombre_banco}, httpOptions).subscribe(
-      (response) => {
-        this.Extract_Json = response as Mux;
-        this.process = false; // Establecer a false después de recibir la respuesta
-      },
-      (error) => {
-        if (error && error.error && error.error.text) {
-          this.Extract_Json = error.error.text;
-      } else {
-          this.Extract_Json = error;
-      }
-        this.process = false; // Establecer a false en caso de error también
-      });
-  }
-
-
+      let Nombre_banco = this.Resp_Json
+  
+      this.process = true;
+      this.service.ExtractTxtImage(Nombre_banco).subscribe(
+        (response) => {
+          this.Extract_Json = response as unknown as Mux;
+          this.process = false; // Establecer a false después de recibir la respuesta
+        },
+        (error) => {
+          if (error.status == 404) {
+            this.BadRespExtract = "no se encontró una coincidencia, porfavor contactar a servicio técnico";
+        } else {
+            this.BadRespExtract = error;
+        }
+          this.process = false; // Establecer a false en caso de error también
+        });
+    }
   
   resetFileInput() {
     this.fileInput.nativeElement.value = '';

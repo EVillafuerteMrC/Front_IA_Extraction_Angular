@@ -3,4 +3,5 @@ export interface Mux {
     NroComprobante: string | undefined;
     Fecha: string | undefined;
     Valor: string | undefined;
+    errornotfound: string | undefined;
 }
