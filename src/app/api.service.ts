@@ -33,11 +33,16 @@ export class APIService {
         'Content-Type': 'application/json'
       }),
     };
-
-    // const requestBody = {
-    //   Nombre_banco: Nombre_banco
-    // };
-
     return this.http.post<string>(ExUrl, {Nombre_banco}, httpOptions);
+  }
+
+  SaveImg(Nombre_clase: string): Observable<string> {
+    const ExUrl = 'http://127.0.0.1:8080/saveimg';
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+    };
+    return this.http.post<string>(ExUrl, {Nombre_clase}, httpOptions);
   }
 }

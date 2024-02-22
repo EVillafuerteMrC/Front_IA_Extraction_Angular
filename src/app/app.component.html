@@ -1,28 +1,40 @@
 <div *ngIf="process == false">
-  <div *ngIf="Extract_Json == undefined">
-    <h1>Suba la imagen</h1>
-    <br>
-    <br>
-    <div *ngIf="!Resp_Json">
-      <input type="file" id="fileInput" #fileInput (onchange)="resetFileInput()">
-      <button type="button" (click)="submitFile()">Enviar</button>
-    </div>
-    <div *ngIf="!errores && Resp_Json">
-      <div *ngIf="BadRespExtract == ''">
-        <p>La imagen pertenece a {{Resp_Json}}</p>
-        <button (click)="extractImage()">Si</button>
-        <button (click)="Inicio()">No</button>
-        <button (click)="Inicio()">Cancelar</button>
+  <div *ngIf="!BadPrediction">
+    <div *ngIf="Extract_Json == undefined ">
+      <h1>Suba la imagen</h1>
+      <br>
+      <br>
+      <div *ngIf="!Resp_Json">
+        <input type="file" id="fileInput" #fileInput (onchange)="resetFileInput()">
+        <button type="button" (click)="submitFile()">Enviar</button>
+      </div>
+      <div *ngIf="!errores && Resp_Json">
+        <div *ngIf="BadRespExtract == ''">
+          <p>La imagen pertenece a {{Resp_Json}}</p>
+          <button (click)="extractImage()">Si</button>
+          <button (click)="BadPredict()">No</button>
+          <button (click)="Inicio()">Cancelar</button>
+        </div>
+      </div>
+      <div *ngIf="errores">
+        <p>Ocurrio un problema, contacte a soporte técnico</p><pre>{{Resp_Json}}</pre>
       </div>
     </div>
-    <div *ngIf="errores">
-      <p>Ocurrio un problema, contacte a soporte técnico</p><pre>{{Resp_Json}}</pre>
-    </div>
+  </div>
+  <div *ngIf="BadPrediction">
+    <p>indique cual es la clase correcta</p>
+    <form (ngSubmit)="saveImg()">
+      <div>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" [(ngModel)]="nombre_clase">
+      </div>
+      <button type="submit">Enviar</button>
+    </form>    
   </div>
   <br>
   <br>
 
-  <div *ngIf="Resp_Json && BadRespExtract == ''" style="display: flex;">
+  <div *ngIf="Resp_Json && BadRespExtract == ''" style="display: flex">
     <div *ngIf="(Extract_Json != undefined)||(Extract_Json)" style="flex: 1;">
       <h2>Detalles del Comprobante</h2>
       <p>Banco:</p>

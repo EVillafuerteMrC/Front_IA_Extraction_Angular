@@ -24,7 +24,9 @@ export class AppComponent {
   process : boolean = false;
   editable : boolean = true;
   errores : boolean = false;
-  BadRespExtract: string =""
+  BadRespExtract: string ="";
+  BadPrediction: boolean = false;
+  nombre_clase: string = ""
   
 
   submitFile() {
@@ -66,6 +68,8 @@ export class AppComponent {
     this.Extract_Json = undefined
     this.errores = false 
     this.BadRespExtract = ''
+    this.BadPrediction = false
+    this.nombre_clase = ""
   }
 
   Inicio(){
@@ -101,5 +105,21 @@ export class AppComponent {
     this.base64String = '';
     this.archivoSeleccionado = null;
   }
+
+  BadPredict(){
+    this.BadPrediction = true
+  }
   
+  saveImg(){
+    this.process = true;
+    this.service.SaveImg(this.nombre_clase).subscribe(
+      (response) => {
+        this.process = false; // Establecer a false después de recibir la respuesta
+      },
+      (error) => {
+        this.process = false; // Establecer a false en caso de error también
+      });
+    this.reset()
+  }
+
 }
