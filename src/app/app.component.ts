@@ -88,7 +88,7 @@ export class AppComponent {
       this.service.ExtractTxtImage(Nombre_banco).subscribe(
         (response) => {
           this.Extract_Json = response as unknown as Mux;
-          this.process = false; // Establecer a false después de recibir la respuesta
+          this.process = false;
         },
         (error) => {
           if (error.status == 404) {
@@ -96,7 +96,7 @@ export class AppComponent {
         } else {
             this.BadRespExtract = error;
         }
-          this.process = false; // Establecer a false en caso de error también
+          this.process = false;
         });
     }
   
@@ -119,10 +119,10 @@ export class AppComponent {
     this.process = true;
     this.service.SaveImg(this.nombre_clase).subscribe(
       (response) => {
-        this.process = false; // Establecer a false después de recibir la respuesta
+        this.process = false; 
       },
       (error) => {
-        this.process = false; // Establecer a false en caso de error también
+        this.process = false; 
       });
     this.reset()
   }
