@@ -22,14 +22,15 @@
     </div>
   </div>
   <div *ngIf="BadPrediction">
-    <p>indique cual es la clase correcta</p>
+    <h3>indique cual es la clase correcta</h3>
     <form (ngSubmit)="saveImg()">
       <div>
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" [(ngModel)]="nombre_clase">
       </div>
       <button type="submit">Enviar</button>
-    </form>    
+    </form>   
+    <button type="button" (click)="regresar()">Regresar</button> 
   </div>
   <br>
   <br>

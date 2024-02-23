@@ -109,6 +109,11 @@ export class AppComponent {
   BadPredict(){
     this.BadPrediction = true
   }
+
+  regresar(){
+    this.BadPrediction = false
+    this.reset()
+  }
   
   saveImg(){
     this.process = true;
