@@ -33,7 +33,9 @@ export class AppComponent {
     this.BadRespExtract = ""
     this.errores = false
     const archivo = this.fileInput.nativeElement.files[0];
-    if (archivo) {
+    let ArchivoName = archivo.name
+
+    if (ArchivoName.endsWith('.jpg') || ArchivoName.endsWith('.jpeg') || ArchivoName.endsWith('.png')) {
       this.archivoSeleccionado = archivo;
   
       const reader = new FileReader();
