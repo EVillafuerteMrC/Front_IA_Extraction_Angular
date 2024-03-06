@@ -6,3 +6,9 @@ img{
 button{
     width: 110px;
 }
+
+.custom-class {
+    background-color: red; /* Cambia el color del fondo */
+    color: white; /* Cambia el color del texto */
+  }
+  

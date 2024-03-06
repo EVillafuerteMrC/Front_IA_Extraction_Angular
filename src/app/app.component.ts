@@ -1,6 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { Mux } from './mux';
 import { APIService } from './api.service';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+
 
 
 @Component({
@@ -11,7 +13,7 @@ import { APIService } from './api.service';
 export class AppComponent {
   title = 'PruebaModeloIA';
 
-  constructor(private service : APIService){}
+  constructor(private service : APIService, private snackBar: MatSnackBar){}
 
   @ViewChild('fileInput') fileInput:any;
 
@@ -28,36 +30,56 @@ export class AppComponent {
   BadPrediction: boolean = false;
   nombre_clase: string = ""
   
+  showAlert(message: string, action: string = 'Cerrar') {
+    const config = new MatSnackBarConfig();
+    config.duration = 10000; 
+    config.verticalPosition = 'top'; 
+    config.panelClass = ['custom-class'];
+    this.snackBar.open(message, action, config);
+  }  
+
 
   submitFile() {
+    this.snackBar.dismiss();
     this.BadRespExtract = ""
     this.errores = false
     const archivo = this.fileInput.nativeElement.files[0];
-    let ArchivoName = archivo.name
 
-    if (ArchivoName.endsWith('.jpg') || ArchivoName.endsWith('.jpeg') || ArchivoName.endsWith('.png')) {
-      this.archivoSeleccionado = archivo;
-  
-      const reader = new FileReader();
-  
-      reader.onload = () => {
-        this.base64String = reader.result as string;
-        if (this.base64String) {
-          this.image_base64 = this.base64String.replace(/^data:image\/jpeg;base64,/, '');
-          this.process = true;
-          this.service.analyzeImage(this.image_base64) .subscribe(prediction => {
-            this.Resp_Json = prediction;
-            this.process = false;
-          }, error => {
-            this.errores = true
-            console.error('Error al analizar la imagen:', error);
-            this.process = false;
-          });
-        } else {
-          this.image_base64 = 'No fue posible convertir';
-        }
-      };
-      reader.readAsDataURL(archivo);
+    if(archivo){
+      let ArchivoName = archivo.name
+      if (ArchivoName.endsWith('.jpg') || ArchivoName.endsWith('.jpeg') || ArchivoName.endsWith('.png')) {
+        this.archivoSeleccionado = archivo;
+    
+        const reader = new FileReader();
+    
+        reader.onload = () => {
+          this.base64String = reader.result as string;
+          if (this.base64String) {
+            this.image_base64 = this.base64String.replace(/^data:image\/jpeg;base64,/, '');
+            this.process = true;
+            this.service.analyzeImage(this.image_base64) .subscribe(prediction => {
+              this.Resp_Json = prediction;
+              this.process = false;
+            }, error => {
+              this.errores = true
+              console.error('Error al analizar la imagen:', error);
+              this.process = false;
+            });
+          } else {
+            this.image_base64 = 'No fue posible convertir';
+          }
+        };
+        reader.readAsDataURL(archivo);
+      }
+      else{
+        this.showAlert('Este tipo archivo no se puede subir.');
+        this.resetFileInput()
+      }
+    }
+    else
+    {
+      this.showAlert('Seleccione un archivo');
+        this.resetFileInput()
     }
   }
 
