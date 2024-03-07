@@ -32,18 +32,19 @@ export class AppComponent {
   
   showAlert(message: string, action: string = 'Cerrar') {
     const config = new MatSnackBarConfig();
-    config.duration = 10000; 
+    config.duration = 100000 ; 
     config.verticalPosition = 'top'; 
     config.panelClass = ['custom-class'];
     this.snackBar.open(message, action, config);
   }  
 
 
-  submitFile() {
+  submitFile(event : any) {
     this.snackBar.dismiss();
     this.BadRespExtract = ""
     this.errores = false
-    const archivo = this.fileInput.nativeElement.files[0];
+    // const archivo = this.fileInput.nativeElement.files[0];
+    const archivo = event.target.files[0];
 
     if(archivo){
       let ArchivoName = archivo.name
@@ -62,11 +63,12 @@ export class AppComponent {
               this.process = false;
             }, error => {
               this.errores = true
-              console.error('Error al analizar la imagen:', error);
-              this.process = false;
+              this.showAlert('Error al analizar la imagen, contacte a soporte')
+              this.reset()
+              this.process = false
             });
           } else {
-            this.image_base64 = 'No fue posible convertir';
+            this.showAlert('No fue posible convertir')
           }
         };
         reader.readAsDataURL(archivo);
@@ -96,11 +98,6 @@ export class AppComponent {
     this.nombre_clase = ""
   }
 
-  Inicio(){
-    this.Resp_Json = ""
-    this.errores = false
-  }
-
   editablefunction(){
     this.editable = false
   }
@@ -116,11 +113,13 @@ export class AppComponent {
         },
         (error) => {
           if (error.status == 404) {
-            this.BadRespExtract = "no se encontró una coincidencia, porfavor contactar a servicio técnico";
+            this.showAlert("no se encontró una coincidencia, porfavor contactar a servicio técnico")
         } else {
-            this.BadRespExtract = error;
+            this.BadRespExtract = error.name
+            this.showAlert('Ocurrio un problema, contacte a soporte técnico '+this.BadRespExtract)
         }
           this.process = false;
+          this.reset()
         });
     }
   

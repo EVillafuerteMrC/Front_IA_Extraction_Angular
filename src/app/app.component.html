@@ -1,88 +1,93 @@
-<div *ngIf="process == false">
-  <div *ngIf="!BadPrediction">
-    <div *ngIf="Extract_Json == undefined ">
-      <h1>Suba la imagen</h1>
-      <br>
-      <br>
-      <div *ngIf="!Resp_Json">
-        <input type="file" id="fileInput" #fileInput (onchange)="resetFileInput()">
-        <button type="button" (click)="submitFile()">Enviar</button>
-      </div>
-      <div *ngIf="!errores && Resp_Json">
-        <div *ngIf="BadRespExtract == ''">
-          <p>La imagen pertenece a {{Resp_Json}}</p>
-          <button (click)="extractImage()">Si</button>
-          <button (click)="BadPredict()">No</button>
-          <button (click)="Inicio()">Cancelar</button>
+<div class="body">
+  <div class="contenedor">
+    <div *ngIf="process == false">
+      <div class="container_files">
+        <div class="content">
+          <div *ngIf="!BadPrediction">
+            <div *ngIf="Extract_Json == undefined ">
+              <div *ngIf="!Resp_Json">
+                <h1>Suba la imagen</h1>
+                <br>
+                <br>
+                <input type="file" id="fileInput" class="custom-file-input" #fileInput (change)="submitFile($event)">
+                <label for="fileInput" class="custom-file-label">Seleccionar archivo</label>
+
+                <!-- <input type="file" id="fileInput" class="custom-file-input" #fileInput (onchange)="resetFileInput()">
+                <label for="fileInput" class="custom-file-label">Seleccionar archivo</label>
+                <button type="button" (click)="submitFile()">Enviar</button> -->
+              </div>
+              <div *ngIf="!errores && Resp_Json">
+                <div *ngIf="BadRespExtract == ''">
+                  <p>LA IMAGEN PERTENECE AL {{Resp_Json}}</p>
+                  <div class="btn_acept">
+                    <button class="botones" (click)="extractImage()">Si</button>
+                    <button class="botones" (click)="BadPredict()">No</button>
+                    <button class="botones" (click)="reset()">Cancelar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="BadPrediction">
+            <h3>indique cual es la clase correcta</h3>
+            <form (ngSubmit)="saveImg()">
+              <div>
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" [(ngModel)]="nombre_clase">
+              </div>
+              <button type="submit">Enviar</button>
+            </form>   
+            <button type="button" (click)="regresar()">Regresar</button> 
+          </div>
+          <br>
+          <br>
+        
+          <div *ngIf="Resp_Json && BadRespExtract == ''">
+            <div *ngIf="(Extract_Json != undefined)||(Extract_Json)">
+              <h2>Detalles del Comprobante</h2>
+              <p>Banco:</p>
+              <div>
+                <input *ngIf="Extract_Json.Banco != undefined" [value]="Extract_Json.Banco" [disabled]="editable">
+                <input *ngIf="Extract_Json.Banco == undefined" [value]="" placeholder="No se pudo recuperar" [disabled]="editable">
+              </div>
+              <br>
+              <p>Número de Comprobante:</p>
+              <div>
+                <input *ngIf="Extract_Json.NroComprobante != undefined" [value]="Extract_Json.NroComprobante" [disabled]="editable">
+                <input *ngIf="Extract_Json.NroComprobante == undefined" [value]="" placeholder="No se pudo recuperar" [disabled]="editable">
+              </div>
+              <br>
+              <p>Fecha:</p>
+              <div>
+                <input *ngIf="Extract_Json.Fecha != undefined" [value]="Extract_Json.Fecha" [disabled]="editable">
+                <input *ngIf="Extract_Json.Fecha == undefined" [value]="" placeholder="No se pudo recuperar" [disabled]="editable">
+              </div>
+              <br>
+              <p>Valor:</p>
+              <div>
+                <input *ngIf="Extract_Json.Valor != undefined" [value]="Extract_Json.Valor" [disabled]="editable">
+                <input *ngIf="Extract_Json.Valor == undefined" [value]="" placeholder="No se pudo recuperar" [disabled]="editable">
+              </div>
+              <br>
+              <div>
+                <p>¿Esta correcta la información?</p>
+                <div class="btn_acept">
+                  <button class="botones" (click)="reset()"> Si </button>
+                  <button class="botones" (click)="editablefunction()"> No </button>
+                  <button class="botones" (click)="reset()"> Cancelar </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div *ngIf="errores">
-        <p>Ocurrio un problema, contacte a soporte técnico</p><pre>{{Resp_Json}}</pre>
+        <img *ngIf="base64String !=''" [src]="base64String" alt="Base64_image">
       </div>
     </div>
-  </div>
-  <div *ngIf="BadPrediction">
-    <h3>indique cual es la clase correcta</h3>
-    <form (ngSubmit)="saveImg()">
-      <div>
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" [(ngModel)]="nombre_clase">
-      </div>
-      <button type="submit">Enviar</button>
-    </form>   
-    <button type="button" (click)="regresar()">Regresar</button> 
-  </div>
-  <br>
-  <br>
-
-  <div *ngIf="Resp_Json && BadRespExtract == ''" style="display: flex">
-    <div *ngIf="(Extract_Json != undefined)||(Extract_Json)" style="flex: 1;">
-      <h2>Detalles del Comprobante</h2>
-      <p>Banco:</p>
-      <div>
-        <input *ngIf="Extract_Json.Banco != undefined" [value]="Extract_Json.Banco" [disabled]="editable">
-        <input *ngIf="Extract_Json.Banco == undefined" [value]="" placeholder="No se pudo recuperar" [disabled]="editable">
-      </div>
+    <div *ngIf="process == true" class="container_files">
       <br>
-      <p>Número de Comprobante:</p>
-      <div>
-        <input *ngIf="Extract_Json.NroComprobante != undefined" [value]="Extract_Json.NroComprobante" [disabled]="editable">
-        <input *ngIf="Extract_Json.NroComprobante == undefined" [value]="" placeholder="No se pudo recuperar" [disabled]="editable">
-      </div>
       <br>
-      <p>Fecha:</p>
-      <div>
-        <input *ngIf="Extract_Json.Fecha != undefined" [value]="Extract_Json.Fecha" [disabled]="editable">
-        <input *ngIf="Extract_Json.Fecha == undefined" [value]="" placeholder="No se pudo recuperar" [disabled]="editable">
-      </div>
       <br>
-      <p>Valor:</p>
-      <div>
-        <input *ngIf="Extract_Json.Valor != undefined" [value]="Extract_Json.Valor" [disabled]="editable">
-        <input *ngIf="Extract_Json.Valor == undefined" [value]="" placeholder="No se pudo recuperar" [disabled]="editable">
-      </div>
       <br>
-      <div>
-        <p>¿Esta correcta la información?</p>
-        <button (click)="reset()"> Si </button>
-        <button (click)="editablefunction()"> No </button>
-        <button (click)="reset()"> Cancelar </button>
-      </div>
-    </div>
-    <img *ngIf="base64String" [src]="base64String" alt="Base64_image">
+      <h2>Proceso en progreso</h2>
   </div>
-  <div *ngIf="BadRespExtract !=''">
-    <p>Ocurrio un problema, {{BadRespExtract}}</p>
-    <button (click)="reset()"> Regresar </button>
-  </div>
-
 </div>
-<div *ngIf="process == true">
-  <br>
-  <br>
-  <br>
-  <br>
-  <h2>Proceso en progreso</h2>
-</div>
-
-
