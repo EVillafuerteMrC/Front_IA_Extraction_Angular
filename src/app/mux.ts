@@ -1,7 +1,7 @@
 export interface Mux {
-    Banco: string | undefined;
-    NroComprobante: string | undefined;
-    Fecha: string | undefined;
-    Valor: string | undefined;
-    errornotfound: string | undefined;
+    Banco: string;
+    NroComprobante: string;
+    Fecha: string;
+    Valor: string;
+    errornotfound: string;
 }

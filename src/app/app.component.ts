@@ -1,5 +1,4 @@
 import { Component, ViewChild } from '@angular/core';
-import { Mux } from './mux';
 import { APIService } from './api.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
@@ -11,6 +10,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+[x: string]: any;
   title = 'PruebaModeloIA';
 
   constructor(private service : APIService, private snackBar: MatSnackBar){}
@@ -21,14 +21,15 @@ export class AppComponent {
   archivoSeleccionado: File | null = null ;
   base64String: string = "" ;
   image_base64: string = "";
-  Resp_Json: string = "";
-  Extract_Json: Mux | undefined;
+  Extract_Json: any
   process : boolean = false;
   editable : boolean = true;
   errores : boolean = false;
   BadRespExtract: string ="";
-  BadPrediction: boolean = false;
   nombre_clase: string = ""
+  styleconf0: any
+  styleconf1: any
+  styleconf2: any  
   
   showAlert(message: string, action: string = 'Cerrar') {
     const config = new MatSnackBarConfig();
@@ -58,17 +59,22 @@ export class AppComponent {
           if (this.base64String) {
             this.image_base64 = this.base64String.replace(/^data:image\/jpeg;base64,/, '');
             this.process = true;
-            this.service.analyzeImage(this.image_base64) .subscribe(prediction => {
-              this.Resp_Json = prediction;
+            this.service.analyzeImage(this.image_base64) .subscribe(     
+              (response) => {
+              this.Extract_Json = JSON.parse(response);
               this.process = false;
-            }, error => {
-              this.errores = true
-              this.showAlert('Error al analizar la imagen, contacte a soporte')
+            },
+            (error) => {
+              if (error.status == 404) {
+                let errortxt = JSON.stringify(error.error)
+                this.showAlert(errortxt+", porfavor contactar a servicio técnico")
+            } else {
+                this.BadRespExtract = error.name
+                this.showAlert('Ocurrio un problema, contacte a soporte técnico '+this.BadRespExtract)
+            }
+              this.process = false;
               this.reset()
-              this.process = false
             });
-          } else {
-            this.showAlert('No fue posible convertir')
           }
         };
         reader.readAsDataURL(archivo);
@@ -90,11 +96,9 @@ export class AppComponent {
     this.editable=true
     this.base64String = ""
     this.image_base64 = ""
-    this.Resp_Json = ""
-    this.Extract_Json = undefined
+    this.Extract_Json = null
     this.errores = false 
     this.BadRespExtract = ''
-    this.BadPrediction = false
     this.nombre_clase = ""
   }
 
@@ -102,26 +106,6 @@ export class AppComponent {
     this.editable = false
   }
 
-  extractImage() {
-      let Nombre_banco = this.Resp_Json
-  
-      this.process = true;
-      this.service.ExtractTxtImage(Nombre_banco).subscribe(
-        (response) => {
-          this.Extract_Json = response as unknown as Mux;
-          this.process = false;
-        },
-        (error) => {
-          if (error.status == 404) {
-            this.showAlert("no se encontró una coincidencia, porfavor contactar a servicio técnico")
-        } else {
-            this.BadRespExtract = error.name
-            this.showAlert('Ocurrio un problema, contacte a soporte técnico '+this.BadRespExtract)
-        }
-          this.process = false;
-          this.reset()
-        });
-    }
   
   resetFileInput() {
     this.fileInput.nativeElement.value = '';
@@ -129,14 +113,6 @@ export class AppComponent {
     this.archivoSeleccionado = null;
   }
 
-  BadPredict(){
-    this.BadPrediction = true
-  }
-
-  regresar(){
-    this.BadPrediction = false
-    this.reset()
-  }
   
   saveImg(){
     this.process = true;
@@ -150,4 +126,44 @@ export class AppComponent {
     this.reset()
   }
 
+  confidencestyle2(){
+
+    if (this.Extract_Json.ConfidenceNro['2']< 0.25) {
+      this.styleconf2 = 'red'
+    } else if (this.Extract_Json.ConfidenceNro['2']>= 0.25 && this.Extract_Json.ConfidenceNro['2']< 0.50) {
+      this.styleconf2 = 'yellow'
+    } else if (this.Extract_Json.ConfidenceNro['2']>= 0.50 && this.Extract_Json.ConfidenceNro['2']< 0.75) {
+      this.styleconf2 = 'light-green'
+    } else{
+      this.styleconf2 = 'dark-green'
+    }
+    return this.styleconf2
+  }
+
+  confidencestyle1(){
+    
+    if (this.Extract_Json.ConfidenceNro['1']< 0.25) {
+      this.styleconf1 ='red'
+    } else if (this.Extract_Json.ConfidenceNro['1']>= 0.25 && this.Extract_Json.ConfidenceNro['1']< 0.50) {
+      this.styleconf1 ='yellow'
+    } else if (this.Extract_Json.ConfidenceNro['1']>= 0.50 && this.Extract_Json.ConfidenceNro['1']< 0.75) {
+      this.styleconf1 = 'light-green'
+    } else{
+      this.styleconf1 ='dark-green'
+    }
+    return this.styleconf1
+  }
+
+  confidencestyle0(){
+    if (this.Extract_Json.ConfidenceNro['0']< 0.25) {
+      this.styleconf0 = 'red' 
+    } else if (this.Extract_Json.ConfidenceNro['0']>= 0.25 && this.Extract_Json.ConfidenceNro['0']< 0.50) {
+      this.styleconf0 = 'yellow'
+    } else if (this.Extract_Json.ConfidenceNro['0']>= 0.50 && this.Extract_Json.ConfidenceNro['0']< 0.75) {
+      this.styleconf0 = 'light-green'
+    } else{
+      this.styleconf0 = 'dark-green'
+    }
+    return this.styleconf0
+  }
 }
